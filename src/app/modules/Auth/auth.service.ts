@@ -1,11 +1,11 @@
-import prisma from "../../../shared/prisma";
+import prisma from "../../../utils/prisma";
 import bcrypt from "bcrypt";
 import { jwtHelpers } from "../../../helper/jwtHelpers";
 import config from "../../../config";
-import { JwtPayload, Secret } from "jsonwebtoken";
-import { sendEmail } from "./sendEmail";
+import { Secret } from "jsonwebtoken";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
+import { sendEmail } from "../../../utils/sendEmail";
 
 const loginUser = async (payload: { email: string; password: string }) => {
   const userData = await prisma.user.findUniqueOrThrow({

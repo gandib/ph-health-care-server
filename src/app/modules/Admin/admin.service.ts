@@ -1,7 +1,7 @@
 import { paginationHelpers } from "./../../../helper/paginationHelpers";
 import { Admin, Prisma } from "@prisma/client";
 import { adminSearchAbleFields } from "./admin.constant";
-import prisma from "../../../shared/prisma";
+import prisma from "../../../utils/prisma";
 import { TAdminFilterRequest } from "./admin.interface";
 import { TPaginationOptions } from "../../interfaces/pagination";
 
