@@ -3,6 +3,8 @@ import { userServices } from "./user.service";
 import sendResponse from "../../../utils/sendResponse";
 import httpStatus from "http-status";
 import catchAsync from "../../../utils/catchAsync";
+import { userFilterAbleFields } from "./user.constant";
+import pick from "../../../utils/pick";
 
 const createAdmin = catchAsync(async (req, res) => {
   const result = await userServices.createAdmin(req.file, req.body);
@@ -16,7 +18,7 @@ const createAdmin = catchAsync(async (req, res) => {
 });
 
 const createDoctor = catchAsync(async (req, res) => {
-  const result = await userServices.createAdmin(req.file, req.body);
+  const result = await userServices.createDoctor(req.file, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -26,7 +28,48 @@ const createDoctor = catchAsync(async (req, res) => {
   });
 });
 
+const createPatient = catchAsync(async (req, res) => {
+  const result = await userServices.createPatient(req.file, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Patient created successfully!",
+    data: result,
+  });
+});
+
+const getAllUser = catchAsync(async (req, res) => {
+  const filters = pick(req.query, userFilterAbleFields);
+  const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+
+  const result = await userServices.getAllUser(filters, options);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Users retrieved successfully!",
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+const changeProfileStatus = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await userServices.changeProfileStatus(id, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User profile status updated successfully!",
+    data: result,
+  });
+});
+
 export const userControllers = {
   createAdmin,
   createDoctor,
+  createPatient,
+  getAllUser,
+  changeProfileStatus,
 };
