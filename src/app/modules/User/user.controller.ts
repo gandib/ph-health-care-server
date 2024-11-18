@@ -1,3 +1,4 @@
+import { JwtPayload } from "jsonwebtoken";
 import { Request, Response } from "express";
 import { userServices } from "./user.service";
 import sendResponse from "../../../utils/sendResponse";
@@ -5,6 +6,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../../utils/catchAsync";
 import { userFilterAbleFields } from "./user.constant";
 import pick from "../../../utils/pick";
+import { UserRole } from "@prisma/client";
 
 const createAdmin = catchAsync(async (req, res) => {
   const result = await userServices.createAdmin(req.file, req.body);
@@ -66,10 +68,38 @@ const changeProfileStatus = catchAsync(async (req, res) => {
   });
 });
 
+const getMyProfile = catchAsync(async (req, res) => {
+  const result = await userServices.getMyProfile(req.user);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My profile data retrieved successfully!",
+    data: result,
+  });
+});
+
+const updateMyProfile = catchAsync(async (req, res) => {
+  const result = await userServices.updateMyProfile(
+    req.user as JwtPayload & { email: string; role: UserRole },
+    req.body,
+    req.file
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My profile data updated successfully!",
+    data: result,
+  });
+});
+
 export const userControllers = {
   createAdmin,
   createDoctor,
   createPatient,
   getAllUser,
   changeProfileStatus,
+  getMyProfile,
+  updateMyProfile,
 };

@@ -55,15 +55,33 @@ const createPatientValidationSchema = z.object({
   }),
 });
 
-const updateUserValidationSchema = z.object({
+const updateUserStatusValidationSchema = z.object({
   body: z.object({
     status: z.string({ required_error: "Status is required!" }),
   }),
+});
+
+const updateUserProfileValidationSchema = z.object({
+  body: z
+    .object({
+      name: z.string().optional(),
+      contactNumber: z.string().optional(),
+      address: z.string().optional(),
+      registrationNumber: z.string().optional(),
+      experience: z.number().optional(),
+      gender: z.enum([Gender.MALE, Gender.FEMALE]).optional(),
+      appointmentFee: z.number().optional(),
+      qualification: z.string().optional(),
+      currentWorkingPlace: z.string().optional(),
+      designation: z.string().optional(),
+    })
+    .strict(),
 });
 
 export const userValidations = {
   createAdminValidationSchema,
   createDoctorValidationSchema,
   createPatientValidationSchema,
-  updateUserValidationSchema,
+  updateUserStatusValidationSchema,
+  updateUserProfileValidationSchema,
 };
