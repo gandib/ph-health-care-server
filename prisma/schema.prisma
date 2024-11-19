@@ -94,14 +94,14 @@ model Specialities {
 }
 
 model DoctorSpecialities {
-  specialtiesId String
+  specialitiesId String
   doctorId String
-  specialties Specialities @relation(fields: [specialtiesId], references: [id])
+  specialities Specialities @relation(fields: [specialitiesId], references: [id])
   doctor Doctor @relation(fields: [doctorId], references: [id])
 
-  @@id([specialtiesId,doctorId])
+  @@id([specialitiesId,doctorId])
 
-  @@map("doctor-specialties")
+  @@map("doctor-specialities")
 }
 
 enum UserRole {
