@@ -155,7 +155,7 @@ const updateDoctor = async (
     });
 
     if (specialities && specialities.length > 0) {
-      // delete specialties
+      // delete specialities
       const deleteSpecialitiesIds = specialities.filter(
         (speciality) => speciality.isDeleted
       );
@@ -168,7 +168,7 @@ const updateDoctor = async (
         });
       }
 
-      // create specialties
+      // create specialities
       const createSpecialitiesIds = specialities.filter(
         (speciality) => !speciality.isDeleted
       );
