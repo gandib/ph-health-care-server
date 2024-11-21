@@ -22,7 +22,7 @@ router.get(
 router.patch(
   "/:id",
   auth(UserRole.PATIENT),
-  // validateRequest(patientValidations.updatePatientValidationSchema),
+  validateRequest(patientValidations.updatePatientValidationSchema),
   patientControllers.updatePatient
 );
 

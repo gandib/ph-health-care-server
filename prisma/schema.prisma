@@ -64,6 +64,7 @@ model Doctor {
 
   user User @relation(fields: [email], references: [email])
   doctorSpecialities DoctorSpecialities[]
+  doctorSchedule DoctorSchedule[]
 
   @@map("doctors")
 }
@@ -79,7 +80,7 @@ model Patient {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  user        User @relation(references: [email], fields: [email])
+  user        User @relation(references: [email], fields: [email], onDelete: Cascade)
   patientHealthData PatientHealthData?
   medicalReport MedicalReport[]
 
@@ -110,7 +111,7 @@ model DoctorSpecialities {
 model PatientHealthData {
    id String @id @default(uuid())
    patientId String @unique
-   patient Patient @relation(fields: [patientId], references: [id])
+   patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
    dateOfBirth String
    gender Gender
    bloodGroup BloodGroup
@@ -128,7 +129,7 @@ model PatientHealthData {
    recentDepression Boolean? @default(false)
    maritalStatus MaritalStatus @default(UNMARRIED)
    createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+   updatedAt     DateTime @updatedAt
 
 
   @@map("patient_health_datas")
@@ -137,7 +138,7 @@ model PatientHealthData {
 model MedicalReport {
   id String @id @default(uuid())
   patientId String
-  patient Patient @relation(fields: [patientId], references: [id])
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
   reportName String
   reportLink String
   createdAt     DateTime @default(now())
@@ -145,6 +146,32 @@ model MedicalReport {
 
 
   @@map("medical_reports")
+}
+
+model Schedule {
+  id String @id @default(uuid())
+  startDateTime DateTime
+  endDateTime DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  doctorSchedule DoctorSchedule[]
+
+  @@map("schedules")
+}
+
+model DoctorSchedule {
+  doctorId String
+  scheduleId String
+  doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
+  isBooked Boolean @default(false)
+  appointmentId String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@id([doctorId,scheduleId])
+
+  @@map("doctor_schedules")
 }
 
 enum UserRole {
