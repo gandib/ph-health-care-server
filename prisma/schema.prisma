@@ -165,7 +165,7 @@ model DoctorSchedule {
   doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
   schedule Schedule @relation(fields: [scheduleId], references: [id], onDelete: Cascade)
   isBooked Boolean @default(false)
-  appointmentId String
+  appointmentId String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
