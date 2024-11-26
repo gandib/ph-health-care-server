@@ -5,6 +5,7 @@ import { scheduleServices } from "./schedule.service";
 import { scheduleFilterAbleFields } from "./schedule.constant";
 import pick from "../../../utils/pick";
 import { JwtPayload } from "jsonwebtoken";
+import { TUser } from "../../interfaces/pagination";
 
 const createSchedule = catchAsync(async (req, res) => {
   const result = await scheduleServices.createSchedule(req.body);
@@ -23,7 +24,7 @@ const getAllSchedules = catchAsync(async (req, res) => {
   const result = await scheduleServices.getAllSchedules(
     filters,
     options,
-    req.user as JwtPayload & { email: string; role: string }
+    req.user as JwtPayload & TUser
   );
 
   sendResponse(res, {
@@ -37,7 +38,7 @@ const getAllSchedules = catchAsync(async (req, res) => {
 const getScheduleById = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await scheduleServices.getScheduleById(
-    req.user as JwtPayload & { email: string; role: string },
+    req.user as JwtPayload & TUser,
     id
   );
 
@@ -52,7 +53,7 @@ const getScheduleById = catchAsync(async (req, res) => {
 const deleteScheduleById = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await scheduleServices.deleteScheduleById(
-    req.user as JwtPayload & { email: string; role: string },
+    req.user as JwtPayload & TUser,
     id
   );
 

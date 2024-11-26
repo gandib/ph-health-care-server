@@ -3,7 +3,7 @@ import prisma from "../../../utils/prisma";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { Prisma, Schedule } from "@prisma/client";
-import { TPaginationOptions } from "../../interfaces/pagination";
+import { TPaginationOptions, TUser } from "../../interfaces/pagination";
 import { paginationHelpers } from "../../../helper/paginationHelpers";
 import { TScheduleFilterRequest } from "./schedule.interface";
 import { JwtPayload } from "jsonwebtoken";
@@ -77,7 +77,7 @@ const createSchedule = async (payload: {
 const getAllSchedules = async (
   query: TScheduleFilterRequest,
   options: TPaginationOptions,
-  user: JwtPayload & { email: string; role: string }
+  user: JwtPayload & TUser
 ) => {
   const { startDateTime, endDateTime, ...fieldsData } = query;
   const { limit, page, skip, sortBy, sortOrder } =
@@ -155,10 +155,7 @@ const getAllSchedules = async (
   };
 };
 
-const getScheduleById = async (
-  user: JwtPayload & { email: string; role: string },
-  id: string
-) => {
+const getScheduleById = async (user: JwtPayload & TUser, id: string) => {
   await prisma.doctor.findUniqueOrThrow({
     where: {
       email: user.email,
@@ -175,10 +172,7 @@ const getScheduleById = async (
   return result;
 };
 
-const deleteScheduleById = async (
-  user: JwtPayload & { email: string; role: string },
-  id: string
-) => {
+const deleteScheduleById = async (user: JwtPayload & TUser, id: string) => {
   const userData = await prisma.user.findUniqueOrThrow({
     where: {
       email: user.email,

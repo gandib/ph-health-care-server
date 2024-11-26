@@ -5,11 +5,12 @@ import { doctorScheduleServices } from "./doctorSchedule.service";
 import { JwtPayload } from "jsonwebtoken";
 import pick from "../../../utils/pick";
 import { doctorScheduleFilterAbleFields } from "./doctorSchedule.constant";
+import { TUser } from "../../interfaces/pagination";
 
 const createDoctorSchedule = catchAsync(async (req, res) => {
   const user = req.user;
   const result = await doctorScheduleServices.createDoctorSchedule(
-    user as JwtPayload & { email: string; role: string },
+    user as JwtPayload & TUser,
     req.body
   );
 
@@ -27,7 +28,7 @@ const getAllSchedules = catchAsync(async (req, res) => {
   const result = await doctorScheduleServices.getAllSchedules(
     filters,
     options,
-    req.user as JwtPayload & { email: string; role: string }
+    req.user as JwtPayload & TUser
   );
 
   sendResponse(res, {
@@ -44,7 +45,7 @@ const getMySchedules = catchAsync(async (req, res) => {
   const result = await doctorScheduleServices.getMySchedules(
     filters,
     options,
-    req.user as JwtPayload & { email: string; role: string }
+    req.user as JwtPayload & TUser
   );
 
   sendResponse(res, {
@@ -58,7 +59,7 @@ const getMySchedules = catchAsync(async (req, res) => {
 const deleteMySchedule = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result = await doctorScheduleServices.deleteMySchedule(
-    req.user as JwtPayload & { email: string; role: string },
+    req.user as JwtPayload & TUser,
     id
   );
 
