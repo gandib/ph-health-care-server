@@ -66,8 +66,8 @@ model Doctor {
   doctorSpecialities DoctorSpecialities[]
   doctorSchedule DoctorSchedule[]
   appointment Appointment[]
-  // review Review[]
-  // prescription Prescription[]
+  prescription Prescription[]
+  review Review[]
 
   @@map("doctors")
 }
@@ -87,8 +87,8 @@ model Patient {
   patientHealthData PatientHealthData?
   medicalReport MedicalReport[]
   appointment Appointment[]
-  // review Review[]
-  // prescription Prescription[]
+  prescription Prescription[]
+  review Review[]
 
 
   @@map("patients")
@@ -196,59 +196,58 @@ model Appointment {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   doctorSchedule DoctorSchedule?
-  // payment Payment?
-  // review Review?
-  // prescription Prescription?
+  payment Payment?
+  prescription Prescription?
+  review Review?
 
   @@map("appointments")
 }
 
-// model Payment {
-//   id String @id @default(uuid())
-//   appointmentId String @unique
-//   appointment Appointment @relation(fields: [appointmentId], references: [id])
-//   amount String
-//   transactionId String
-//   status PaymentStatus
-//   paymentGatewayData Json
-//   createdAt     DateTime @default(now())
-//   updatedAt     DateTime @updatedAt
+model Payment {
+  id String @id @default(uuid())
+  appointmentId String @unique
+  appointment Appointment @relation(fields: [appointmentId], references: [id])
+  amount Float
+  transactionId String
+  status PaymentStatus @default(UNPAID)
+  paymentGatewayData Json?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-//   @@map("payments")
-// }
+  @@map("payments")
+}
 
-// model Review {
-//   id String @id @default(uuid())
-//   patientId String
-//   patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-//   doctorId String
-//   doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-//   appointmentId String @unique
-//   appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-//   rating Float
-//   comment String
-//   createdAt     DateTime @default(now())
-//   updatedAt     DateTime @updatedAt
+model Prescription {
+  id String @id @default(uuid())
+  appointmentId String @unique
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  doctorId String
+  doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patientId String
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  instructions String
+  followUpDate DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-//   @@map("reviews")
-// }
+  @@map("prescriptions")
+}
 
-// model Prescription {
-//   id String @id @default(uuid())
-//   appointmentId String @unique
-//   appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
-//   doctorId String
-//   doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-//   patientId String
-//   patient Patient @relation(fields: [doctorId], references: [id], onDelete: Cascade)
-//   instructions String
-//   comment String
-//   followUpDate DateTime
-//   createdAt     DateTime @default(now())
-//   updatedAt     DateTime @updatedAt
+model Review {
+  id String @id @default(uuid())
+  patientId String
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId String
+  doctor Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  appointmentId String @unique
+  appointment Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+  rating Float
+  comment String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-//   @@map("prescriptions")
-// }
+  @@map("reviews")
+}
 
 enum UserRole {
   SUPER_ADMIN
