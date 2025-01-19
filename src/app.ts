@@ -1,9 +1,11 @@
+import { appointmentServices } from "./app/modules/Appointment/appointment.service";
 import express, { Application, Request, Response, NextFunction } from "express";
 import cors from "cors";
 import router from "./app/routes";
 import httpStatus from "http-status";
 import globalErrorHandler from "./app/middlewares/globalErrorHandlers";
 import cookieParser from "cookie-parser";
+import cron from "node-cron";
 
 const app: Application = express();
 
@@ -18,6 +20,14 @@ app.get("/", (req: Request, res: Response) => {
 });
 
 app.use("/api/v1", router);
+
+cron.schedule("* * * * *", () => {
+  try {
+    appointmentServices.cancelUnpaidAppointments();
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 app.use(globalErrorHandler);
 

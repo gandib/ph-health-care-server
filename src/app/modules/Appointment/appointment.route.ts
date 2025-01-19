@@ -26,4 +26,10 @@ router.post(
   appointmentControllers.createAppointment
 );
 
+router.patch(
+  "/status/:id",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR),
+  appointmentControllers.changeAppointmentStatus
+);
+
 export const appointmentRoutes = router;

@@ -4,7 +4,9 @@ import prisma from "../../../utils/prisma";
 import { v4 as uuidv4 } from "uuid";
 import { TAppointmentFilterRequest } from "./appointment.interface";
 import { paginationHelpers } from "../../../helper/paginationHelpers";
-import { Prisma } from "@prisma/client";
+import { AppointmentStatus, Prisma } from "@prisma/client";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
 const createAppointment = async (
   user: JwtPayload & TUser,
@@ -222,8 +224,89 @@ const getAllAppointment = async (
   };
 };
 
+const changeAppointmentStatus = async (
+  id: string,
+  payload: { status: AppointmentStatus },
+  user: TUser
+) => {
+  const appointmentData = await prisma.appointment.findUniqueOrThrow({
+    where: {
+      id,
+    },
+    include: {
+      doctor: true,
+    },
+  });
+
+  if (user.role === "DOCTOR" && user.email !== appointmentData?.doctor?.email) {
+    throw new AppError(httpStatus.BAD_REQUEST, "This is not your appointment!");
+  }
+
+  const result = await prisma.appointment.update({
+    where: {
+      id,
+    },
+    data: {
+      status: payload.status,
+    },
+  });
+
+  return result;
+};
+
+const cancelUnpaidAppointments = async () => {
+  const thirtyMinAgo = new Date(Date.now() - 1 * 60 * 1000);
+
+  const unPaidAppointments = await prisma.appointment.findMany({
+    where: {
+      createdAt: {
+        lte: thirtyMinAgo,
+      },
+      paymentStatus: "UNPAID",
+    },
+  });
+
+  const appointmentIdsToCancel = unPaidAppointments.map(
+    (appointment) => appointment.id
+  );
+
+  await prisma.$transaction(async (tx) => {
+    await tx.payment.deleteMany({
+      where: {
+        appointmentId: {
+          in: appointmentIdsToCancel,
+        },
+      },
+    });
+
+    await tx.doctorSchedule.updateMany({
+      where: {
+        appointmentId: {
+          in: appointmentIdsToCancel,
+        },
+      },
+      data: {
+        isBooked: false,
+        appointmentId: null,
+      },
+    });
+
+    await tx.appointment.deleteMany({
+      where: {
+        id: {
+          in: appointmentIdsToCancel,
+        },
+      },
+    });
+  });
+
+  // console.log(appointmentIdsToCancel);
+};
+
 export const appointmentServices = {
   createAppointment,
   getMyAppointment,
   getAllAppointment,
+  changeAppointmentStatus,
+  cancelUnpaidAppointments,
 };
