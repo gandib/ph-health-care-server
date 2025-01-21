@@ -1,5 +1,3 @@
-import { error } from "console";
-
 class AppError extends Error {
   statusCode: number;
   constructor(statusCode: number, message: string | undefined, stack = "") {
