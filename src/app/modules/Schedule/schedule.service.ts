@@ -7,7 +7,11 @@ import { TPaginationOptions, TUser } from "../../interfaces/pagination";
 import { paginationHelpers } from "../../../helper/paginationHelpers";
 import { TScheduleFilterRequest } from "./schedule.interface";
 import { JwtPayload } from "jsonwebtoken";
-import { string } from "zod";
+
+const convertDateTime = async (date: Date) => {
+  const offset = date.getTimezoneOffset() * 60000;
+  return new Date(date.getTime() + offset);
+};
 
 const createSchedule = async (payload: {
   startDate: string;
@@ -56,9 +60,19 @@ const createSchedule = async (payload: {
     );
 
     while (startDateTime < endDateTime) {
+      // const scheduleData = {
+      //   startDateTime: startDateTime,
+      //   endDateTime: addMinutes(startDateTime, intervalTime),
+      // };
+
+      // save time as utc
+      const utcStartDateTime = await convertDateTime(startDateTime);
+      const utcEndDateTime = await convertDateTime(
+        addMinutes(startDateTime, intervalTime)
+      );
       const scheduleData = {
-        startDateTime: startDateTime,
-        endDateTime: addMinutes(startDateTime, intervalTime),
+        startDateTime: utcStartDateTime,
+        endDateTime: utcEndDateTime,
       };
 
       const result = await prisma.schedule.create({
